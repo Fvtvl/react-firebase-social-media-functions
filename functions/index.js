@@ -9,6 +9,7 @@ const {
   postOneScream,
   getScream,
   commentOnScream,
+  deleteComment,
   likeScream,
   unlikeScream,
   deleteScream,
@@ -31,6 +32,7 @@ app.get('/scream/:screamId/like', FBAuth, likeScream);
 app.get('/scream/:screamId/unlike', FBAuth, unlikeScream);
 
 app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
+app.delete('/scream/:screamId/comment', FBAuth, deleteComment);
 
 //users routes
 app.post('/signup', signup);

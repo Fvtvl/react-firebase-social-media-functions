@@ -229,3 +229,41 @@ exports.deleteScream = (req, res) => {
       res.status(500).json({ error: err.code });
     });
 };
+
+//Delete a comment
+
+exports.deleteComment = (req, res) => {
+  const screamId = req.params.screamId;
+  let screamData;
+
+  db.doc(`/comments/${screamId}`)
+    .get()
+    .then((doc) => {
+      if (!doc.exists) {
+        return res.status(404).json({ error: 'Comment not found' });
+      }
+
+      if (doc.data().userHandle !== req.user.handle) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
+      screamData = doc.data();
+      return doc.ref.delete();
+    })
+    .then(() => {
+      return db.doc(`/screams/${screamData.screamId}`).get();
+    })
+    .then((doc) => {
+      if (doc.exists) {
+        const commentCount = doc.data().commentCount - 1;
+        return doc.ref.update({ commentCount });
+      }
+    })
+    .then(() => {
+      res.json({ message: 'Comment deleted successfully' });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    });
+};
